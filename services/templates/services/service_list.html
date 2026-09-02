@@ -40,9 +40,12 @@
                     Длительность: {{ service.duration }} минут
                 </div>
 
-                <a href="#" class="book-button">
-                    Забронировать
-                </a>
+                <a
+    href="{% url 'service_detail' service.id %}"
+    class="book-button"
+>
+    Забронировать
+</a>
 
             </div>
 

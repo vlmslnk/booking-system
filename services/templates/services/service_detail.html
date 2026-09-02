@@ -1,0 +1,78 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ service.name }}</title>
+
+    <link rel="stylesheet" href="{% static 'services/style.css' %}">
+</head>
+
+<body>
+
+<header>
+    <h1>Система бронирования</h1>
+</header>
+
+<main class="container">
+
+    <a href="{% url 'service_list' %}">
+        ← Все услуги
+    </a>
+
+    <div class="service-card">
+
+        <h2>{{ service.name }}</h2>
+
+        <p class="description">
+            {{ service.description }}
+        </p>
+
+        <div class="price">
+            {{ service.price }} €
+        </div>
+
+        <div class="duration">
+            Длительность: {{ service.duration }} минут
+        </div>
+
+    </div>
+
+
+    <h2>Выберите специалиста</h2>
+
+    <div class="services">
+
+        {% for specialist in specialists %}
+
+            <div class="service-card">
+
+                <h3>{{ specialist.name }}</h3>
+
+                <p class="description">
+                    {{ specialist.description }}
+                </p>
+
+                <a href="#" class="book-button">
+                    Выбрать
+                </a>
+
+            </div>
+
+        {% empty %}
+
+            <p>
+                Для этой услуги пока нет доступных специалистов.
+            </p>
+
+        {% endfor %}
+
+    </div>
+
+</main>
+
+</body>
+</html>
