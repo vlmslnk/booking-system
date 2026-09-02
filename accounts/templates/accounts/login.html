@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="auth-header">
+
+            <p class="auth-label">
+                BOOKING SYSTEM
+            </p>
+
+            <h1>
+                С возвращением
+            </h1>
+
+            <p>
+                Войдите в свой аккаунт, чтобы управлять записями.
+            </p>
+
+        </div>
+
+
+        {% if error %}
+
+            <div class="auth-error">
+                {{ error }}
+            </div>
+
+        {% endif %}
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <div class="auth-field">
+
+                <label for="username">
+                    Имя пользователя
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Введите имя пользователя"
+                    autocomplete="username"
+                    required
+                >
+
+            </div>
+
+
+            <div class="auth-field">
+
+                <label for="password">
+                    Пароль
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Введите пароль"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="auth-button"
+            >
+                Войти
+            </button>
+
+        </form>
+
+
+        <div class="auth-footer">
+
+            <span>
+                Нет аккаунта?
+            </span>
+
+            <a href="{% url 'register' %}">
+                Зарегистрироваться
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

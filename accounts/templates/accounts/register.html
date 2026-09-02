@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-card">
+
+        <div class="auth-header">
+
+            <p class="auth-label">
+                BOOKING SYSTEM
+            </p>
+
+            <h1>
+                Создать аккаунт
+            </h1>
+
+            <p>
+                Зарегистрируйтесь, чтобы управлять своими записями.
+            </p>
+
+        </div>
+
+
+        {% if form.non_field_errors %}
+
+            <div class="auth-error">
+                {{ form.non_field_errors }}
+            </div>
+
+        {% endif %}
+
+
+        <form method="post">
+
+            {% csrf_token %}
+
+
+            <div class="auth-field">
+
+                <label for="{{ form.username.id_for_label }}">
+                    {{ form.username.label }}
+                </label>
+
+                {{ form.username }}
+
+                {% if form.username.errors %}
+
+                    <div class="field-error">
+                        {{ form.username.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="auth-field">
+
+                <label for="{{ form.email.id_for_label }}">
+                    {{ form.email.label }}
+                </label>
+
+                {{ form.email }}
+
+                {% if form.email.errors %}
+
+                    <div class="field-error">
+                        {{ form.email.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="auth-field">
+
+                <label for="{{ form.password.id_for_label }}">
+                    {{ form.password.label }}
+                </label>
+
+                {{ form.password }}
+
+                {% if form.password.errors %}
+
+                    <div class="field-error">
+                        {{ form.password.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="auth-field">
+
+                <label for="{{ form.password_confirm.id_for_label }}">
+                    {{ form.password_confirm.label }}
+                </label>
+
+                {{ form.password_confirm }}
+
+                {% if form.password_confirm.errors %}
+
+                    <div class="field-error">
+                        {{ form.password_confirm.errors }}
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="auth-button"
+            >
+                Зарегистрироваться
+            </button>
+
+        </form>
+
+
+        <div class="auth-footer">
+
+            <span>
+                Уже есть аккаунт?
+            </span>
+
+            <a href="{% url 'login' %}">
+                Войти
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

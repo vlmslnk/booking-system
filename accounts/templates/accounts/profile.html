@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <div class="profile-header">
+        <div>
+            <p class="profile-label">ЛИЧНЫЙ КАБИНЕТ</p>
+
+            <h1>
+                Привет, {{ user.username }} 👋
+            </h1>
+
+            <p class="profile-email">
+                {{ user.email }}
+            </p>
+        </div>
+
+        <a href="{% url 'service_list' %}" class="profile-book-button">
+            Записаться
+        </a>
+    </div>
+
+
+    <section class="bookings-section">
+
+        <div class="section-heading">
+            <h2>Мои записи</h2>
+
+            <span class="booking-count">
+                {{ bookings|length }}
+            </span>
+        </div>
+
+
+        {% if bookings %}
+
+            <div class="booking-grid">
+
+                {% for booking in bookings %}
+
+                    <article class="booking-card">
+
+                        <div class="booking-card-top">
+
+                            <div>
+                                <span class="booking-label">
+                                    УСЛУГА
+                                </span>
+
+                                <h3>
+                                    {{ booking.service.name }}
+                                </h3>
+                            </div>
+
+                            <div class="booking-status">
+                                Запланировано
+                            </div>
+
+                        </div>
+
+
+                        <div class="booking-info">
+
+                            <div class="booking-info-item">
+                                <span>👤</span>
+
+                                <div>
+                                    <small>Специалист</small>
+                                    <strong>
+                                        {{ booking.specialist.name }}
+                                    </strong>
+                                </div>
+                            </div>
+
+
+                            <div class="booking-info-item">
+                                <span>📅</span>
+
+                                <div>
+                                    <small>Дата</small>
+                                    <strong>
+                                        {{ booking.date|date:"d.m.Y" }}
+                                    </strong>
+                                </div>
+                            </div>
+
+
+                            <div class="booking-info-item">
+                                <span>🕐</span>
+
+                                <div>
+                                    <small>Время</small>
+                                    <strong>
+                                        {{ booking.time|time:"H:i" }}
+                                    </strong>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="booking-card-bottom">
+
+    <div>
+        <span>
+            {{ booking.service.duration }} минут
+        </span>
+
+        <strong>
+            {{ booking.service.price }} €
+        </strong>
+    </div>
+
+
+    {% if booking.status == "scheduled" %}
+
+        <form
+            method="post"
+            action="{% url 'cancel_booking' booking.id %}"
+            onsubmit="return confirm('Вы уверены, что хотите отменить запись?');"
+        >
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="cancel-booking-button"
+            >
+                Отменить запись
+            </button>
+
+        </form>
+
+    {% endif %}
+
+</div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-bookings">
+
+                <div class="empty-icon">
+                    📅
+                </div>
+
+                <h3>
+                    У вас пока нет записей
+                </h3>
+
+                <p>
+                    Выберите услугу и забронируйте удобное время.
+                </p>
+
+                <a href="{% url 'service_list' %}">
+                    Посмотреть услуги
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

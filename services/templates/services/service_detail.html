@@ -48,27 +48,32 @@
 
         {% for specialist in specialists %}
 
-            <div class="service-card">
+    <div class="service-card">
 
-                <h3>{{ specialist.name }}</h3>
+        <h3>
+            {{ specialist.name }}
+        </h3>
 
-                <p class="description">
-                    {{ specialist.description }}
-                </p>
+        <p class="description">
+            {{ specialist.description }}
+        </p>
 
-                <a href="#" class="book-button">
-                    Выбрать
-                </a>
+        <a
+            href="{% url 'create_booking' service.id specialist.id %}"
+            class="book-button"
+        >
+            Выбрать
+        </a>
 
-            </div>
+    </div>
 
-        {% empty %}
+{% empty %}
 
-            <p>
-                Для этой услуги пока нет доступных специалистов.
-            </p>
+    <p>
+        Для этой услуги пока нет доступных специалистов.
+    </p>
 
-        {% endfor %}
+{% endfor %}
 
     </div>
 

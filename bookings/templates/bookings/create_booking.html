@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Запись на услугу</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #ffffff;
+            color: #111111;
+        }
+
+        header {
+            background: #ffffff;
+            color: #111111;
+            padding: 25px 5%;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        header h1 {
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 28px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            margin: 45px auto;
+        }
+
+        .booking-card {
+            background: #ffffff;
+            padding: 35px;
+            border: 1px solid #e5e5e5;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+        }
+
+        /* =========================
+           SERVICE INFO
+        ========================= */
+
+        .service-info {
+            padding-bottom: 25px;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 30px;
+        }
+
+        .service-label {
+            margin: 0 0 8px;
+            color: #888888;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .service-info h2 {
+            margin: 0 0 18px;
+            font-size: 26px;
+            color: #111111;
+        }
+
+        .service-info p {
+            margin: 9px 0;
+            color: #555555;
+            font-size: 14px;
+        }
+
+        .service-info strong {
+            color: #222222;
+        }
+
+        /* =========================
+           SECTIONS
+        ========================= */
+
+        .date-section,
+        .slots-section,
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            margin: 0 0 15px;
+            color: #111111;
+            font-size: 18px;
+        }
+
+        /* =========================
+           DATE
+        ========================= */
+
+        .date-input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #111111;
+            font-family: inherit;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .date-input:focus {
+            border-color: #111111;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .date-button {
+            width: 100%;
+            margin-top: 12px;
+            padding: 13px;
+            border: 1px solid #111111;
+            border-radius: 8px;
+            background: #111111;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .date-button:hover {
+            background: #ffffff;
+            color: #111111;
+        }
+
+        /* =========================
+           TIME SLOTS
+        ========================= */
+
+        .slot-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .slot-button {
+            display: block;
+            padding: 12px 8px;
+            text-align: center;
+            background: #f6f6f6;
+            border: 1px solid #e5e5e5;
+            color: #222222;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .slot-button:hover {
+            background: #111111;
+            border-color: #111111;
+            color: #ffffff;
+        }
+
+        .no-slots {
+            padding: 15px;
+            background: #f6f6f6;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            color: #777777;
+            font-size: 14px;
+        }
+
+        /* =========================
+           CUSTOMER FORM
+        ========================= */
+
+        .form-section {
+            padding-top: 30px;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .form-field {
+            margin-bottom: 18px;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 7px;
+            color: #222222;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .form-field input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #111111;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-field input:focus {
+            border-color: #111111;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-field input::placeholder {
+            color: #999999;
+        }
+
+        .error {
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border-left: 2px solid #111111;
+            background: #f6f6f6;
+            color: #555555;
+            font-size: 13px;
+        }
+
+        .errorlist {
+            margin: 6px 0 0;
+            padding: 0;
+            list-style: none;
+            color: #555555;
+            font-size: 12px;
+        }
+
+        .errorlist li {
+            padding: 5px 8px;
+            border-left: 2px solid #111111;
+            background: #f6f6f6;
+        }
+
+        /* =========================
+           SUBMIT
+        ========================= */
+
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 5px;
+            border: 1px solid #111111;
+            border-radius: 8px;
+            background: #111111;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .submit-button:hover {
+            background: #ffffff;
+            color: #111111;
+        }
+
+        /* =========================
+           SELECTED TIME
+        ========================= */
+
+        .selected-time {
+            margin-top: 18px;
+            padding: 12px 14px;
+            background: #f6f6f6;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            color: #555555;
+            font-size: 13px;
+        }
+
+        .selected-time strong {
+            color: #111111;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 20px 5%;
+            }
+
+            header h1 {
+                font-size: 23px;
+            }
+
+            .container {
+                width: 92%;
+                margin: 30px auto;
+            }
+
+            .booking-card {
+                padding: 22px;
+                border-radius: 14px;
+            }
+
+            .service-info h2 {
+                font-size: 23px;
+            }
+
+            .slot-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+<header>
+    <h1>Запись на услугу</h1>
+</header>
+
+
+<div class="container">
+
+    <div class="booking-card">
+
+
+        <!-- =========================
+             SERVICE INFORMATION
+        ========================= -->
+
+        <div class="service-info">
+
+            <p class="service-label">
+                ВЫБРАННАЯ УСЛУГА
+            </p>
+
+            <h2>
+                {{ service.name }}
+            </h2>
+
+            <p>
+                <strong>Специалист:</strong>
+                {{ specialist.name }}
+            </p>
+
+            <p>
+                <strong>Цена:</strong>
+                {{ service.price }} €
+            </p>
+
+            <p>
+                <strong>Длительность:</strong>
+                {{ service.duration }} минут
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             DATE
+        ========================= -->
+
+        <div class="date-section">
+
+            <h3>
+                1. Выберите дату
+            </h3>
+
+            <form method="get">
+
+                <input
+                    class="date-input"
+                    type="date"
+                    name="date"
+                    value="{{ selected_date|date:'Y-m-d' }}"
+                    min="{{ today|date:'Y-m-d' }}"
+                    required
+                >
+
+                <button
+                    class="date-button"
+                    type="submit"
+                >
+                    Показать свободное время
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- =========================
+             TIME
+        ========================= -->
+
+        {% if selected_date %}
+
+            <div class="slots-section">
+
+                <h3>
+                    2. Выберите время
+                </h3>
+
+
+                {% if available_slots %}
+
+                    <div class="slot-list">
+
+                        {% for slot in available_slots %}
+
+                            <a
+                                class="slot-button"
+                                href="?date={{ selected_date|date:'Y-m-d' }}&time={{ slot }}"
+                            >
+                                {{ slot }}
+                            </a>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    {% if request.GET.time %}
+
+                        <div class="selected-time">
+                            Выбрано время:
+                            <strong>
+                                {{ request.GET.time }}
+                            </strong>
+                        </div>
+
+                    {% endif %}
+
+
+                {% else %}
+
+                    <div class="no-slots">
+                        На эту дату свободного времени нет.
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- =========================
+             CUSTOMER DATA
+        ========================= -->
+
+        <div class="form-section">
+
+            <h3>
+                3. Ваши данные
+            </h3>
+
+
+            {% if form.non_field_errors %}
+
+                <div class="error">
+                    {{ form.non_field_errors }}
+                </div>
+
+            {% endif %}
+
+
+            <form method="post">
+
+                {% csrf_token %}
+
+
+                <!--
+                    Date and time are hidden because
+                    they have already been selected above.
+                -->
+
+                <input
+                    type="hidden"
+                    name="date"
+                    value="{{ selected_date|date:'Y-m-d' }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="time"
+                    value="{{ request.GET.time|default:'' }}"
+                >
+
+
+                <div class="form-field">
+
+                    {{ form.customer_name.label_tag }}
+
+                    {{ form.customer_name }}
+
+                    {{ form.customer_name.errors }}
+
+                </div>
+
+
+                <div class="form-field">
+
+                    {{ form.customer_phone.label_tag }}
+
+                    {{ form.customer_phone }}
+
+                    {{ form.customer_phone.errors }}
+
+                </div>
+
+
+                <button
+                    class="submit-button"
+                    type="submit"
+                >
+                    Забронировать
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

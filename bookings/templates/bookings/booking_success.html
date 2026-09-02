@@ -1,0 +1,101 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Бронирование подтверждено</title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'services/style.css' %}"
+    >
+
+</head>
+
+
+<body>
+
+<header>
+
+    <h1>
+        Система бронирования
+    </h1>
+
+</header>
+
+
+<main class="container">
+
+    <div class="service-card">
+
+        <h2>
+            Бронирование подтверждено! 🎉
+        </h2>
+
+
+        <p>
+            Спасибо, {{ booking.customer_name }}!
+        </p>
+
+
+        <p>
+            Услуга:
+            <strong>
+                {{ booking.service.name }}
+            </strong>
+        </p>
+
+
+        <p>
+            Специалист:
+            <strong>
+                {{ booking.specialist.name }}
+            </strong>
+        </p>
+
+
+        <p>
+            Дата:
+            <strong>
+                {{ booking.date }}
+            </strong>
+        </p>
+
+
+        <p>
+            Время:
+            <strong>
+                {{ booking.time }}
+            </strong>
+        </p>
+
+
+        <p>
+            Телефон:
+            {{ booking.customer_phone }}
+        </p>
+
+
+        <a
+            href="{% url 'service_list' %}"
+            class="book-button"
+        >
+            Вернуться к услугам
+        </a>
+
+    </div>
+
+</main>
+
+</body>
+
+</html>
