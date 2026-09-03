@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-!*th19#&bvd^$xi6=!y00de^7%r4qv2*cp3b_4=jxtp3h#4yhs
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "192.168.100.183"]
 
 
 # Application definition
@@ -132,3 +132,6 @@ MAILERS = {
 LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/accounts/profile/"
 LOGOUT_REDIRECT_URL = "/services/"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

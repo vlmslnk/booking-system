@@ -27,7 +27,7 @@
     <div class="header-inner">
 
         <a
-            href="{% url 'service_list' %}"
+            href="{% if user.is_authenticated %}{% url 'profile' %}{% else %}{% url 'home' %}{% endif %}"
             class="site-logo"
         >
             <span class="logo-mark">B</span>
@@ -40,9 +40,15 @@
 
         <nav class="site-nav">
 
-            <a href="{% url 'service_list' %}">
-                Услуги
-            </a>
+    <a href="{% url 'service_list' %}">
+        Услуги
+    </a>
+
+    <a href="{% url 'specialist_list' %}">
+        Наши мастера
+    </a>
+
+
 
 
             {% if user.is_authenticated %}

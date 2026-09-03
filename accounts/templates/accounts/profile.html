@@ -6,9 +6,15 @@
 
 <div class="profile-page">
 
+    <!-- PROFILE HEADER -->
+
     <div class="profile-header">
+
         <div>
-            <p class="profile-label">ЛИЧНЫЙ КАБИНЕТ</p>
+
+            <p class="profile-label">
+                ЛИЧНЫЙ КАБИНЕТ
+            </p>
 
             <h1>
                 Привет, {{ user.username }} 👋
@@ -17,36 +23,106 @@
             <p class="profile-email">
                 {{ user.email }}
             </p>
+
         </div>
 
-        <a href="{% url 'service_list' %}" class="profile-book-button">
+        <a
+            href="{% url 'service_list' %}"
+            class="profile-book-button"
+        >
             Записаться
         </a>
+
     </div>
 
+
+    <!-- STATISTICS -->
+
+    <div class="profile-stats">
+
+        <div class="profile-stat-card">
+
+            <span class="profile-stat-number">
+                {{ upcoming_count }}
+            </span>
+
+            <span class="profile-stat-label">
+                Предстоящих
+            </span>
+
+        </div>
+
+
+        <div class="profile-stat-card">
+
+            <span class="profile-stat-number">
+                {{ total_count }}
+            </span>
+
+            <span class="profile-stat-label">
+                Всего записей
+            </span>
+
+        </div>
+
+
+        <div class="profile-stat-card">
+
+            <span class="profile-stat-number">
+                {{ completed_count }}
+            </span>
+
+            <span class="profile-stat-label">
+                Завершено
+            </span>
+
+        </div>
+
+
+        <div class="profile-stat-card">
+
+            <span class="profile-stat-number">
+                {{ cancelled_count }}
+            </span>
+
+            <span class="profile-stat-label">
+                Отменено
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- UPCOMING BOOKINGS -->
 
     <section class="bookings-section">
 
         <div class="section-heading">
-            <h2>Мои записи</h2>
+
+            <h2>
+                Предстоящие записи
+            </h2>
 
             <span class="booking-count">
-                {{ bookings|length }}
+                {{ upcoming_count }}
             </span>
+
         </div>
 
 
-        {% if bookings %}
+        {% if upcoming_bookings %}
 
             <div class="booking-grid">
 
-                {% for booking in bookings %}
+                {% for booking in upcoming_bookings %}
 
                     <article class="booking-card">
 
                         <div class="booking-card-top">
 
                             <div>
+
                                 <span class="booking-label">
                                     УСЛУГА
                                 </span>
@@ -54,10 +130,14 @@
                                 <h3>
                                     {{ booking.service.name }}
                                 </h3>
+
                             </div>
 
+
                             <div class="booking-status">
-                                Запланировано
+
+                                {{ booking.get_status_display }}
+
                             </div>
 
                         </div>
@@ -66,38 +146,65 @@
                         <div class="booking-info">
 
                             <div class="booking-info-item">
-                                <span>👤</span>
+
+                                <span>
+                                    👤
+                                </span>
 
                                 <div>
-                                    <small>Специалист</small>
+
+                                    <small>
+                                        Специалист
+                                    </small>
+
                                     <strong>
                                         {{ booking.specialist.name }}
                                     </strong>
+
                                 </div>
+
                             </div>
 
 
                             <div class="booking-info-item">
-                                <span>📅</span>
+
+                                <span>
+                                    📅
+                                </span>
 
                                 <div>
-                                    <small>Дата</small>
+
+                                    <small>
+                                        Дата
+                                    </small>
+
                                     <strong>
                                         {{ booking.date|date:"d.m.Y" }}
                                     </strong>
+
                                 </div>
+
                             </div>
 
 
                             <div class="booking-info-item">
-                                <span>🕐</span>
+
+                                <span>
+                                    🕐
+                                </span>
 
                                 <div>
-                                    <small>Время</small>
+
+                                    <small>
+                                        Время
+                                    </small>
+
                                     <strong>
                                         {{ booking.time|time:"H:i" }}
                                     </strong>
+
                                 </div>
+
                             </div>
 
                         </div>
@@ -105,39 +212,37 @@
 
                         <div class="booking-card-bottom">
 
-    <div>
-        <span>
-            {{ booking.service.duration }} минут
-        </span>
+                            <div>
 
-        <strong>
-            {{ booking.service.price }} €
-        </strong>
-    </div>
+                                <span>
+                                    {{ booking.service.duration }} минут
+                                </span>
+
+                                <strong>
+                                    {{ booking.service.price }} €
+                                </strong>
+
+                            </div>
 
 
-    {% if booking.status == "scheduled" %}
+                            <form
+                                method="post"
+                                action="{% url 'cancel_booking' booking.id %}"
+                                onsubmit="return confirm('Вы уверены, что хотите отменить запись?');"
+                            >
 
-        <form
-            method="post"
-            action="{% url 'cancel_booking' booking.id %}"
-            onsubmit="return confirm('Вы уверены, что хотите отменить запись?');"
-        >
+                                {% csrf_token %}
 
-            {% csrf_token %}
+                                <button
+                                    type="submit"
+                                    class="cancel-booking-button"
+                                >
+                                    Отменить запись
+                                </button>
 
-            <button
-                type="submit"
-                class="cancel-booking-button"
-            >
-                Отменить запись
-            </button>
+                            </form>
 
-        </form>
-
-    {% endif %}
-
-</div>
+                        </div>
 
                     </article>
 
@@ -154,7 +259,7 @@
                 </div>
 
                 <h3>
-                    У вас пока нет записей
+                    Нет предстоящих записей
                 </h3>
 
                 <p>
@@ -170,6 +275,308 @@
         {% endif %}
 
     </section>
+
+
+    <!-- COMPLETED BOOKINGS -->
+
+    <section class="bookings-section">
+
+        <div class="section-heading">
+
+            <h2>
+                История
+            </h2>
+
+            <span class="booking-count">
+                {{ completed_count }}
+            </span>
+
+        </div>
+
+
+        {% if completed_bookings %}
+
+            <div class="booking-grid">
+
+                {% for booking in completed_bookings %}
+
+                    <article class="booking-card">
+
+                        <div class="booking-card-top">
+
+                            <div>
+
+                                <span class="booking-label">
+                                    УСЛУГА
+                                </span>
+
+                                <h3>
+                                    {{ booking.service.name }}
+                                </h3>
+
+                            </div>
+
+
+                            <div class="booking-status">
+                                {{ booking.get_status_display }}
+                            </div>
+
+                        </div>
+
+
+                        <div class="booking-info">
+
+                            <div class="booking-info-item">
+
+                                <span>
+                                    👤
+                                </span>
+
+                                <div>
+
+                                    <small>
+                                        Специалист
+                                    </small>
+
+                                    <strong>
+                                        {{ booking.specialist.name }}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="booking-info-item">
+
+                                <span>
+                                    📅
+                                </span>
+
+                                <div>
+
+                                    <small>
+                                        Дата
+                                    </small>
+
+                                    <strong>
+                                        {{ booking.date|date:"d.m.Y" }}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="booking-info-item">
+
+                                <span>
+                                    🕐
+                                </span>
+
+                                <div>
+
+                                    <small>
+                                        Время
+                                    </small>
+
+                                    <strong>
+                                        {{ booking.time|time:"H:i" }}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="booking-card-bottom">
+
+                            <div>
+
+                                <span>
+                                    {{ booking.service.duration }} минут
+                                </span>
+
+                                <strong>
+                                    {{ booking.service.price }} €
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-bookings">
+
+                <div class="empty-icon">
+                    ✓
+                </div>
+
+                <h3>
+                    История пока пуста
+                </h3>
+
+                <p>
+                    Здесь появятся завершённые записи.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- CANCELLED BOOKINGS -->
+
+    {% if cancelled_bookings %}
+
+        <section class="bookings-section">
+
+            <div class="section-heading">
+
+                <h2>
+                    Отменённые записи
+                </h2>
+
+                <span class="booking-count">
+                    {{ cancelled_count }}
+                </span>
+
+            </div>
+
+
+            <div class="booking-grid">
+
+                {% for booking in cancelled_bookings %}
+
+                    <article class="booking-card">
+
+                        <div class="booking-card-top">
+
+                            <div>
+
+                                <span class="booking-label">
+                                    УСЛУГА
+                                </span>
+
+                                <h3>
+                                    {{ booking.service.name }}
+                                </h3>
+
+                            </div>
+
+
+                            <div class="booking-status booking-status-cancelled">
+
+                                {{ booking.get_status_display }}
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="booking-info">
+
+                            <div class="booking-info-item">
+
+                                <span>
+                                    👤
+                                </span>
+
+                                <div>
+
+                                    <small>
+                                        Специалист
+                                    </small>
+
+                                    <strong>
+                                        {{ booking.specialist.name }}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="booking-info-item">
+
+                                <span>
+                                    📅
+                                </span>
+
+                                <div>
+
+                                    <small>
+                                        Дата
+                                    </small>
+
+                                    <strong>
+                                        {{ booking.date|date:"d.m.Y" }}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="booking-info-item">
+
+                                <span>
+                                    🕐
+                                </span>
+
+                                <div>
+
+                                    <small>
+                                        Время
+                                    </small>
+
+                                    <strong>
+                                        {{ booking.time|time:"H:i" }}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="booking-card-bottom">
+
+                            <div>
+
+                                <span>
+                                    {{ booking.service.duration }} минут
+                                </span>
+
+                                <strong>
+                                    {{ booking.service.price }} €
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    {% endif %}
 
 </div>
 

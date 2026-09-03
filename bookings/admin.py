@@ -23,6 +23,12 @@ class WorkingHourAdmin(admin.ModelAdmin):
         "specialist__name",
     )
 
+    ordering = (
+        "specialist",
+        "start_weekday",
+        "start_time",
+    )
+
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
@@ -32,9 +38,11 @@ class BookingAdmin(admin.ModelAdmin):
         "specialist",
         "date",
         "time",
+        "status",
     )
 
     list_filter = (
+        "status",
         "date",
         "specialist",
         "service",
@@ -43,9 +51,13 @@ class BookingAdmin(admin.ModelAdmin):
     search_fields = (
         "customer_name",
         "customer_phone",
+        "user__username",
+        "user__email",
     )
 
     ordering = (
         "-date",
         "-time",
     )
+
+    list_per_page = 20

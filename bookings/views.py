@@ -41,9 +41,12 @@ def get_available_slots(service, specialist, selected_date):
         minutes=service.duration
     )
 
+    # Учитываем только активные записи.
+    # Отменённые записи больше не блокируют время.
     bookings = Booking.objects.filter(
         specialist=specialist,
         date=selected_date,
+        status="scheduled",
     ).select_related("service")
 
     available_slots = []
@@ -263,6 +266,7 @@ def booking_success(request, booking_id):
         },
     )
 
+
 @login_required
 def cancel_booking(request, booking_id):
 
@@ -275,7 +279,10 @@ def cancel_booking(request, booking_id):
     if request.method == "POST":
 
         booking.status = "cancelled"
-        booking.save(update_fields=["status"])
+
+        booking.save(
+            update_fields=["status"]
+        )
 
         return redirect("profile")
 

@@ -1,0 +1,509 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ specialist.name }} — Booking System
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <!-- Заголовок профиля -->
+
+    <div class="profile-header">
+
+        <div>
+
+            <p class="profile-label">
+                BOOKING SYSTEM
+            </p>
+
+            <h1>
+                {{ specialist.name }}
+            </h1>
+
+            <p class="profile-email">
+                Профиль специалиста
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Профиль мастера -->
+
+    <section class="bookings-section">
+
+        <div class="booking-grid">
+
+            <article class="booking-card">
+
+
+                <!-- Фото мастера -->
+
+                {% if specialist.photo %}
+
+                    <img
+                        src="{{ specialist.photo.url }}"
+                        alt="{{ specialist.name }}"
+                        style="
+                            width: 320px;
+                            height: 320px;
+                            object-fit: cover;
+                            border-radius: 16px;
+                            display: block;
+                            margin: 0 auto 30px;
+                        "
+                    >
+
+                {% else %}
+
+                    <div
+                        style="
+                            width: 320px;
+                            height: 320px;
+                            border-radius: 16px;
+                            background: var(--gray-100);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 80px;
+                            margin: 0 auto 30px;
+                        "
+                    >
+                        👤
+                    </div>
+
+                {% endif %}
+
+
+                <!-- Информация о мастере -->
+
+                <span class="booking-label">
+                    МАСТЕР
+                </span>
+
+                <h2>
+                    {{ specialist.name }}
+                </h2>
+
+                <p style="color: var(--gray-700);">
+                    {{ specialist.description }}
+                </p>
+
+                <p style="color: var(--gray-700);">
+
+                    Опыт работы:
+
+                    <strong>
+                        {{ specialist.experience }} лет
+                    </strong>
+
+                </p>
+
+
+                <!-- ПОРТФОЛИО -->
+
+                <div style="margin-top: 45px;">
+
+                    <span class="booking-label">
+                        ПОРТФОЛИО
+                    </span>
+
+                    <h2 style="margin-top: 10px;">
+                        Мои работы
+                    </h2>
+
+
+                    {% if specialist.portfolio.all %}
+
+                        <!-- Карусель -->
+
+                        <div
+                            id="portfolio-carousel"
+                            style="
+                                margin-top: 25px;
+                                position: relative;
+                            "
+                        >
+
+                            {% for item in specialist.portfolio.all %}
+
+                                <div
+                                    class="portfolio-slide"
+                                    style="
+                                        display: none;
+                                    "
+                                >
+
+                                    <!-- Фотография -->
+
+                                    <div
+                                        style="
+                                            width: 100%;
+                                            background: var(--gray-100);
+                                            border-radius: 16px;
+                                            overflow: hidden;
+                                            display: flex;
+                                            justify-content: center;
+                                            align-items: center;
+                                        "
+                                    >
+
+                                        <img
+                                            src="{{ item.image.url }}"
+                                            alt="{{ item.title|default:'Работа мастера' }}"
+                                            style="
+                                                width: 100%;
+                                                max-height: 420px;
+                                                object-fit: cover;
+                                                display: block;
+                                            "
+                                        >
+
+                                    </div>
+
+
+                                    <!-- Название работы -->
+
+                                    {% if item.title %}
+
+                                        <p
+                                            style="
+                                                text-align: center;
+                                                margin: 15px 0 0;
+                                                color: var(--gray-700);
+                                                font-size: 16px;
+                                            "
+                                        >
+                                            {{ item.title }}
+                                        </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            {% endfor %}
+
+
+                            <!-- Кнопки -->
+
+                            <button
+                                type="button"
+                                id="portfolio-prev"
+                                style="
+                                    position: absolute;
+                                    left: 15px;
+                                    top: 50%;
+                                    transform: translateY(-50%);
+                                    width: 45px;
+                                    height: 45px;
+                                    border: none;
+                                    border-radius: 50%;
+                                    background: rgba(255,255,255,0.95);
+                                    color: var(--black);
+                                    font-size: 25px;
+                                    cursor: pointer;
+                                    box-shadow: var(--shadow);
+                                    z-index: 2;
+                                "
+                            >
+                                ←
+                            </button>
+
+
+                            <button
+                                type="button"
+                                id="portfolio-next"
+                                style="
+                                    position: absolute;
+                                    right: 15px;
+                                    top: 50%;
+                                    transform: translateY(-50%);
+                                    width: 45px;
+                                    height: 45px;
+                                    border: none;
+                                    border-radius: 50%;
+                                    background: rgba(255,255,255,0.95);
+                                    color: var(--black);
+                                    font-size: 25px;
+                                    cursor: pointer;
+                                    box-shadow: var(--shadow);
+                                    z-index: 2;
+                                "
+                            >
+                                →
+                            </button>
+
+
+                            <!-- Счётчик -->
+
+                            <div
+                                id="portfolio-counter"
+                                style="
+                                    text-align: center;
+                                    margin-top: 15px;
+                                    color: var(--gray-500);
+                                    font-size: 14px;
+                                "
+                            >
+                            </div>
+
+                        </div>
+
+
+                    {% else %}
+
+                        <p
+                            style="
+                                color: var(--gray-500);
+                                margin-top: 20px;
+                            "
+                        >
+                            Фотографии работ пока не добавлены.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- УСЛУГИ -->
+
+                <div style="margin-top: 45px;">
+
+                    <span class="booking-label">
+                        УСЛУГИ
+                    </span>
+
+                    <h2 style="margin-top: 10px;">
+                        Услуги и цены
+                    </h2>
+
+
+                    {% for service in services %}
+
+                        <div
+                            style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                gap: 20px;
+                                padding: 18px 0;
+                                border-bottom:
+                                    1px solid var(--border);
+                            "
+                        >
+
+                            <div>
+
+                                <strong>
+                                    {{ service.name }}
+                                </strong>
+
+                                <div
+                                    style="
+                                        color: var(--gray-500);
+                                        margin-top: 5px;
+                                    "
+                                >
+                                    {{ service.duration }}
+                                    минут
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 20px;
+                                "
+                            >
+
+                                <strong>
+                                    {{ service.price }} €
+                                </strong>
+
+
+                                <a
+                                    href="{% url 'create_booking' service.id specialist.id %}"
+                                    class="book-button"
+                                >
+                                    Записаться
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    {% empty %}
+
+                        <p style="color: var(--gray-500);">
+                            У специалиста пока нет доступных услуг.
+                        </p>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Назад -->
+
+                <div style="margin-top: 30px;">
+
+                    <a
+                        href="{% url 'specialist_list' %}"
+                        class="book-button"
+                        style="
+                            background: var(--gray-100);
+                            color: var(--black);
+                        "
+                    >
+                        ← Все мастера
+                    </a>
+
+                </div>
+
+
+            </article>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<!-- JavaScript карусели -->
+
+<script>
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            const slides =
+                document.querySelectorAll(
+                    ".portfolio-slide"
+                );
+
+            const prevButton =
+                document.getElementById(
+                    "portfolio-prev"
+                );
+
+            const nextButton =
+                document.getElementById(
+                    "portfolio-next"
+                );
+
+            const counter =
+                document.getElementById(
+                    "portfolio-counter"
+                );
+
+
+            if (!slides.length) {
+                return;
+            }
+
+
+            let currentSlide = 0;
+
+
+            function showSlide(index) {
+
+                slides.forEach(
+                    function (slide, i) {
+
+                        slide.style.display =
+                            i === index
+                                ? "block"
+                                : "none";
+
+                    }
+                );
+
+
+                counter.textContent =
+                    `${index + 1} / ${slides.length}`;
+
+
+                if (slides.length <= 1) {
+
+                    prevButton.style.display =
+                        "none";
+
+                    nextButton.style.display =
+                        "none";
+
+                    counter.style.display =
+                        "none";
+
+                } else {
+
+                    prevButton.style.display =
+                        "block";
+
+                    nextButton.style.display =
+                        "block";
+
+                    counter.style.display =
+                        "block";
+
+                }
+
+            }
+
+
+            prevButton.addEventListener(
+                "click",
+                function () {
+
+                    currentSlide--;
+
+                    if (currentSlide < 0) {
+
+                        currentSlide =
+                            slides.length - 1;
+
+                    }
+
+                    showSlide(currentSlide);
+
+                }
+            );
+
+
+            nextButton.addEventListener(
+                "click",
+                function () {
+
+                    currentSlide++;
+
+                    if (
+                        currentSlide >=
+                        slides.length
+                    ) {
+
+                        currentSlide = 0;
+
+                    }
+
+                    showSlide(currentSlide);
+
+                }
+            );
+
+
+            showSlide(currentSlide);
+
+        }
+    );
+
+</script>
+
+{% endblock %}

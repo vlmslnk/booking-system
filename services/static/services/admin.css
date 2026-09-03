@@ -1,0 +1,1302 @@
+/* =========================================================
+   BOOKING SYSTEM
+   DJANGO ADMIN
+   White / Black / Gray Design
+   ========================================================= */
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+
+:root {
+    --white: #ffffff;
+
+    --black: #111111;
+    --gray-900: #222222;
+    --gray-700: #555555;
+    --gray-500: #888888;
+    --gray-300: #dddddd;
+    --gray-200: #eeeeee;
+    --gray-100: #f6f6f6;
+
+    --border: #e5e5e5;
+
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+
+    --radius-small: 8px;
+    --radius-medium: 14px;
+    --radius-large: 18px;
+}
+
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+html,
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+body {
+    background: var(--white);
+    color: var(--black);
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+a,
+a:link,
+a:visited {
+    color: var(--black);
+    text-decoration: none;
+}
+
+a:hover,
+a:focus {
+    color: var(--gray-900);
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+#header {
+    min-height: 76px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 5%;
+
+    background: var(--white);
+
+    border-bottom: 1px solid var(--border);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   BOOKING LOGO
+   ========================================================= */
+
+.booking-admin-brand {
+    display: flex;
+    align-items: center;
+}
+
+.booking-admin-brand a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+
+    color: var(--black) !important;
+}
+
+.booking-admin-logo {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--radius-small);
+
+    background: var(--black);
+    color: var(--white);
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.booking-admin-name {
+    color: var(--black);
+
+    font-size: 14px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   USER TOOLS
+   ========================================================= */
+
+#user-tools {
+    color: var(--gray-500);
+
+    font-size: 13px;
+}
+
+#user-tools a,
+#user-tools a:link,
+#user-tools a:visited {
+    color: var(--gray-700) !important;
+}
+
+#user-tools a:hover {
+    color: var(--black) !important;
+}
+
+
+/* =========================================================
+   GLOBAL NAV
+   ========================================================= */
+
+.booking-admin-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-left: 35px;
+
+    color: var(--gray-500);
+
+    font-size: 13px;
+}
+
+.booking-admin-nav a,
+.booking-admin-nav a:link,
+.booking-admin-nav a:visited {
+    padding: 8px 12px;
+
+    border-radius: 7px;
+
+    color: var(--gray-700) !important;
+}
+
+.booking-admin-nav a:hover {
+    background: var(--gray-100);
+    color: var(--black) !important;
+}
+
+.booking-admin-divider {
+    color: var(--gray-300);
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+
+#content {
+    width: 90%;
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding: 45px 0 70px;
+
+    color: var(--black);
+}
+
+#content-main {
+    color: var(--black);
+}
+
+
+/* =========================================================
+   BREADCRUMBS
+   ========================================================= */
+
+div.breadcrumbs {
+    width: 90%;
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding: 18px 0;
+
+    background: transparent;
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--gray-500);
+
+    font-size: 13px;
+}
+
+div.breadcrumbs a,
+div.breadcrumbs a:link,
+div.breadcrumbs a:visited {
+    color: var(--gray-700) !important;
+}
+
+div.breadcrumbs a:hover {
+    color: var(--black) !important;
+}
+
+
+/* =========================================================
+   PAGE TITLES
+   ========================================================= */
+
+#content h1 {
+    margin: 0 0 30px;
+
+    color: var(--black);
+
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+.booking-dashboard {
+    width: 100%;
+}
+
+.dashboard-header {
+    margin-bottom: 35px;
+}
+
+.dashboard-label {
+    margin: 0 0 8px;
+
+    color: var(--gray-500);
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+.dashboard-header h1 {
+    margin: 0 0 10px;
+
+    color: var(--black);
+
+    font-size: 32px;
+    line-height: 1.2;
+}
+
+.dashboard-description {
+    margin: 0;
+
+    color: var(--gray-500);
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   DASHBOARD CARDS
+   ========================================================= */
+
+.dashboard-cards {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 22px;
+}
+
+.dashboard-card,
+.dashboard-card:link,
+.dashboard-card:visited {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 18px;
+
+    padding: 28px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+
+    box-shadow: var(--shadow);
+
+    color: var(--black) !important;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+
+    border-color: var(--gray-300);
+
+    box-shadow:
+        0 14px 35px rgba(0, 0, 0, 0.10);
+
+    color: var(--black) !important;
+}
+
+
+/* =========================================================
+   DASHBOARD ICON
+   ========================================================= */
+
+.dashboard-card-icon {
+    width: 44px;
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: var(--gray-100);
+
+    color: var(--black);
+
+    font-size: 18px;
+
+    filter: grayscale(1);
+}
+
+
+/* =========================================================
+   DASHBOARD TEXT
+   ========================================================= */
+
+.dashboard-card-label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: var(--gray-500) !important;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+}
+
+.dashboard-card h2 {
+    margin: 0 0 7px;
+
+    color: var(--black) !important;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.dashboard-card p {
+    margin: 0;
+
+    color: var(--gray-500) !important;
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   DJANGO MODULES
+   ========================================================= */
+
+.module {
+    margin-bottom: 25px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-medium);
+
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
+}
+
+.module h2,
+.module caption,
+.module > h2 {
+    padding: 16px 20px;
+
+    background: var(--gray-100);
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--black) !important;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-align: left;
+}
+
+.module p {
+    color: var(--gray-700);
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+#result_list {
+    width: 100%;
+
+    background: var(--white);
+
+    border-collapse: collapse;
+}
+
+#result_list thead {
+    background: var(--gray-100);
+}
+
+#result_list th {
+    padding: 14px 16px;
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--gray-700) !important;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-align: left;
+
+    white-space: nowrap;
+}
+
+#result_list th a,
+#result_list th a:link,
+#result_list th a:visited {
+    color: var(--gray-700) !important;
+}
+
+#result_list th a:hover {
+    color: var(--black) !important;
+}
+
+#result_list td {
+    padding: 15px 16px;
+
+    border-bottom: 1px solid var(--border);
+
+    background: var(--white);
+
+    color: var(--gray-900) !important;
+
+    font-size: 13px;
+}
+
+#result_list tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#result_list tbody tr:hover td {
+    background: var(--gray-100);
+}
+
+#result_list td a,
+#result_list td a:link,
+#result_list td a:visited {
+    color: var(--black) !important;
+
+    font-weight: 600;
+}
+
+#result_list td a:hover {
+    color: var(--gray-700) !important;
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   CHANGE LIST
+   ========================================================= */
+
+#changelist {
+    color: var(--black);
+}
+
+#changelist-form {
+    background: var(--white);
+}
+
+
+/* =========================================================
+   FILTER SIDEBAR
+   ========================================================= */
+
+#changelist-filter {
+    background: var(--gray-100);
+
+    border-left: 1px solid var(--border);
+
+    color: var(--black);
+}
+
+#changelist-filter h2 {
+    padding: 16px 18px;
+
+    background: var(--black);
+
+    color: var(--white) !important;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+#changelist-filter h3 {
+    margin: 18px 15px 8px;
+
+    color: var(--gray-700);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+#changelist-filter ul {
+    padding: 0 15px 15px;
+}
+
+#changelist-filter li {
+    margin: 4px 0;
+}
+
+#changelist-filter a,
+#changelist-filter a:link,
+#changelist-filter a:visited {
+    display: block;
+
+    padding: 7px 9px;
+
+    border-radius: 7px;
+
+    color: var(--gray-700) !important;
+
+    font-size: 13px;
+}
+
+#changelist-filter a:hover {
+    background: var(--white);
+
+    color: var(--black) !important;
+}
+
+#changelist-filter li.selected a {
+    background: var(--white);
+
+    color: var(--black) !important;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+#toolbar {
+    margin-bottom: 20px;
+
+    padding: 16px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-medium);
+
+    box-shadow: var(--shadow);
+}
+
+#toolbar form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#toolbar input[type="text"] {
+    max-width: 420px;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+input,
+select,
+textarea {
+    box-sizing: border-box;
+
+    padding: 10px 12px;
+
+    border: 1px solid var(--gray-300);
+
+    border-radius: var(--radius-small);
+
+    background: var(--white);
+
+    color: var(--black);
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--black);
+
+    box-shadow:
+        0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--gray-500);
+}
+
+
+/* =========================================================
+   CHECKBOXES
+   ========================================================= */
+
+input[type="checkbox"] {
+    width: auto;
+
+    accent-color: var(--black);
+}
+
+
+/* =========================================================
+   SELECT
+   ========================================================= */
+
+select {
+    min-height: 38px;
+}
+
+select option {
+    background: var(--white);
+
+    color: var(--black);
+}
+
+
+/* =========================================================
+   FORM ROW
+   ========================================================= */
+
+.form-row {
+    padding: 16px 18px;
+
+    border-bottom: 1px solid var(--border);
+
+    background: var(--white);
+}
+
+.form-row:last-child {
+    border-bottom: none;
+}
+
+.form-row label {
+    color: var(--gray-900) !important;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.help,
+.help-tooltip {
+    color: var(--gray-500) !important;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   FIELDSETS
+   ========================================================= */
+
+fieldset {
+    margin-bottom: 22px;
+
+    padding: 0;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-medium);
+
+    background: var(--white);
+
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
+}
+
+fieldset h2 {
+    margin: 0;
+
+    padding: 16px 20px;
+
+    background: var(--gray-100);
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--black) !important;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+    min-height: 40px;
+
+    padding: 10px 17px;
+
+    border: 1px solid var(--black) !important;
+
+    border-radius: 8px !important;
+
+    background: var(--black) !important;
+
+    color: var(--white) !important;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.submit-row input:hover,
+a.button:hover {
+    transform: translateY(-1px);
+
+    background: var(--gray-900) !important;
+
+    color: var(--white) !important;
+}
+
+
+/* =========================================================
+   OBJECT TOOLS
+   ========================================================= */
+
+.object-tools {
+    margin-bottom: 20px;
+}
+
+.object-tools a,
+.object-tools a:link,
+.object-tools a:visited {
+    padding: 10px 15px;
+
+    border-radius: 8px;
+
+    background: var(--black) !important;
+
+    color: var(--white) !important;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.object-tools a:hover {
+    background: var(--gray-900) !important;
+
+    color: var(--white) !important;
+}
+
+
+/* =========================================================
+   ADD / CHANGE / DELETE LINKS
+   ========================================================= */
+
+.addlink,
+.changelink,
+.historylink,
+.deletelink {
+    color: var(--black) !important;
+}
+
+.addlink:hover,
+.changelink:hover,
+.historylink:hover,
+.deletelink:hover {
+    color: var(--gray-700) !important;
+}
+
+
+/* =========================================================
+   SUBMIT ROW
+   ========================================================= */
+
+.submit-row {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 18px;
+
+    background: var(--gray-100);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-medium);
+}
+
+.submit-row .deletelink-box {
+    margin-left: auto;
+}
+
+.submit-row .deletelink {
+    color: var(--gray-700) !important;
+}
+
+.submit-row .deletelink:hover {
+    color: var(--black) !important;
+}
+
+
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+
+.paginator {
+    padding: 18px;
+
+    background: var(--white);
+
+    border-top: 1px solid var(--border);
+
+    color: var(--gray-500);
+
+    font-size: 13px;
+}
+
+.paginator a,
+.paginator a:link,
+.paginator a:visited {
+    color: var(--gray-700) !important;
+}
+
+.paginator a:hover {
+    color: var(--black) !important;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.actions {
+    padding: 12px;
+
+    background: var(--gray-100);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-small);
+
+    color: var(--gray-700);
+}
+
+.actions select {
+    margin: 0 8px;
+}
+
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
+.messagelist {
+    margin: 0 0 25px;
+
+    padding: 0;
+
+    list-style: none;
+}
+
+.messagelist li {
+    margin-bottom: 10px;
+
+    padding: 13px 16px;
+
+    background: var(--gray-100);
+
+    border: 1px solid var(--border);
+
+    border-left: 3px solid var(--black);
+
+    border-radius: 8px;
+
+    color: var(--gray-900) !important;
+
+    font-size: 13px;
+}
+
+
+/* Remove Django colors */
+
+.messagelist .success,
+.messagelist .warning,
+.messagelist .error {
+    background: var(--gray-100) !important;
+
+    color: var(--gray-900) !important;
+}
+
+
+/* =========================================================
+   INLINE FORMS
+   ========================================================= */
+
+.inline-group {
+    margin-bottom: 25px;
+
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-medium);
+
+    box-shadow: var(--shadow);
+
+    overflow: hidden;
+}
+
+.inline-group h2 {
+    margin: 0;
+
+    padding: 15px 18px;
+
+    background: var(--gray-100);
+
+    border-bottom: 1px solid var(--border);
+
+    color: var(--black) !important;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   DJANGO ADMIN APP LIST
+   ========================================================= */
+
+#content-main .app-list {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(300px, 1fr));
+
+    gap: 20px;
+}
+
+#content-main .app-list .module {
+    margin: 0;
+}
+
+#content-main .app-list table {
+    width: 100%;
+}
+
+#content-main .app-list a,
+#content-main .app-list a:link,
+#content-main .app-list a:visited {
+    color: var(--black) !important;
+}
+
+#content-main .app-list a:hover {
+    color: var(--gray-700) !important;
+}
+
+
+/* =========================================================
+   RECENT ACTIONS
+   ========================================================= */
+
+#content-related {
+    color: var(--black);
+}
+
+#content-related .module {
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-medium);
+
+    box-shadow: var(--shadow);
+}
+
+#content-related h2 {
+    color: var(--black) !important;
+}
+
+#content-related h3 {
+    color: var(--gray-700);
+
+    font-size: 11px;
+}
+
+#content-related ul {
+    padding: 15px;
+}
+
+#content-related a {
+    color: var(--gray-700) !important;
+}
+
+#content-related a:hover {
+    color: var(--black) !important;
+}
+
+
+/* =========================================================
+   CALENDAR / DATE WIDGET
+   ========================================================= */
+
+.calendarbox,
+.clockbox {
+    background: var(--white);
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius-medium);
+
+    box-shadow: var(--shadow);
+}
+
+.calendarbox a,
+.clockbox a {
+    color: var(--black) !important;
+}
+
+
+/* =========================================================
+   DARK TEXT OVERRIDE
+   ========================================================= */
+
+#content,
+#content *,
+#content-main,
+#content-main *,
+.module,
+.module *,
+.form-row,
+.form-row *,
+fieldset,
+fieldset *,
+.change-form,
+.change-form * {
+    text-shadow: none;
+}
+
+
+/* =========================================================
+   FORCE TEXT COLORS
+   ========================================================= */
+
+#content,
+#content-main,
+.module,
+.module p,
+.module td,
+.module th,
+.form-row,
+.form-row label {
+    color: var(--gray-900);
+}
+
+
+/* =========================================================
+   REMOVE DJANGO GREEN / YELLOW / BLUE
+   ========================================================= */
+
+body {
+    --body-fg: #222222;
+    --body-bg: #ffffff;
+
+    --header-color: #111111;
+    --header-branding-color: #111111;
+    --header-link-color: #555555;
+
+    --breadcrumbs-fg: #555555;
+    --breadcrumbs-bg: #ffffff;
+
+    --link-fg: #111111;
+    --link-selected-fg: #222222;
+
+    --hairline-color: #e5e5e5;
+    --border-color: #dddddd;
+
+    --darkened-bg: #f6f6f6;
+
+    --selected-bg: #f6f6f6;
+    --selected-row: #f6f6f6;
+
+    --button-fg: #ffffff;
+    --button-bg: #111111;
+
+    --default-button-bg: #111111;
+
+    --close-button-bg: #111111;
+    --close-button-hover-bg: #222222;
+}
+
+
+/* =========================================================
+   TOP NAV DARK TEXT FIX
+   ========================================================= */
+
+#header *,
+#header a,
+#header a:link,
+#header a:visited {
+    color: var(--gray-700);
+}
+
+#header a:hover {
+    color: var(--black);
+}
+
+
+/* Keep logo white */
+
+.booking-admin-logo {
+    color: var(--white) !important;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+#footer {
+    width: 90%;
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding: 25px 0;
+
+    background: transparent;
+
+    border-top: 1px solid var(--border);
+
+    color: var(--gray-500);
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    #header {
+        min-height: auto;
+
+        padding: 15px 5%;
+
+        flex-wrap: wrap;
+
+        gap: 15px;
+    }
+
+    .booking-admin-nav {
+        width: 100%;
+
+        margin-left: 0;
+    }
+
+    #content {
+        width: 92%;
+
+        padding-top: 30px;
+    }
+
+    div.breadcrumbs {
+        width: 92%;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+    }
+
+    #content-main .app-list {
+        grid-template-columns: 1fr;
+    }
+
+    #result_list {
+        min-width: 700px;
+    }
+
+    #changelist {
+        overflow-x: auto;
+    }
+
+    #toolbar form {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    #toolbar input[type="text"] {
+        max-width: none;
+    }
+
+    .submit-row {
+        flex-wrap: wrap;
+    }
+
+    .submit-row .deletelink-box {
+        width: 100%;
+
+        margin-left: 0;
+    }
+}

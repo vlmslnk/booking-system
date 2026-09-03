@@ -1,6 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
 from bookings.models import Booking
@@ -89,12 +88,34 @@ def profile(request):
         "specialist",
     )
 
+    upcoming_bookings = bookings.filter(
+        status="scheduled"
+    )
+
+    completed_bookings = bookings.filter(
+        status="completed"
+    )
+
+    cancelled_bookings = bookings.filter(
+        status="cancelled"
+    )
+
+    context = {
+        "bookings": bookings,
+        "upcoming_bookings": upcoming_bookings,
+        "completed_bookings": completed_bookings,
+        "cancelled_bookings": cancelled_bookings,
+
+        "total_count": bookings.count(),
+        "upcoming_count": upcoming_bookings.count(),
+        "completed_count": completed_bookings.count(),
+        "cancelled_count": cancelled_bookings.count(),
+    }
+
     return render(
         request,
         "accounts/profile.html",
-        {
-            "bookings": bookings,
-        },
+        context,
     )
 
 

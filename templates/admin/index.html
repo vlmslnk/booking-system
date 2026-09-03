@@ -1,0 +1,151 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<div class="booking-dashboard">
+
+    <div class="dashboard-header">
+
+        <p class="dashboard-label">
+            BOOKING SYSTEM
+        </p>
+
+        <h1>
+            Панель управления
+        </h1>
+
+        <p class="dashboard-description">
+            Управление записями, мастерами и услугами.
+        </p>
+
+    </div>
+
+
+    <div class="dashboard-cards">
+
+
+        <!-- ЗАПИСИ -->
+
+        <a
+            href="{% url 'admin:bookings_booking_changelist' %}"
+            class="dashboard-card"
+        >
+
+            <div class="dashboard-card-icon">
+                📅
+            </div>
+
+            <div>
+
+                <span class="dashboard-card-label">
+                    ЗАПИСИ
+                </span>
+
+                <h2>
+                    Записи клиентов
+                </h2>
+
+                <p>
+                    Просмотр и управление всеми записями.
+                </p>
+
+            </div>
+
+        </a>
+
+
+        <!-- МАСТЕРА -->
+
+        <a
+            href="{% url 'admin:services_specialist_changelist' %}"
+            class="dashboard-card"
+        >
+
+            <div class="dashboard-card-icon">
+                👩‍💼
+            </div>
+
+            <div>
+
+                <span class="dashboard-card-label">
+                    МАСТЕРА
+                </span>
+
+                <h2>
+                    Наши мастера
+                </h2>
+
+                <p>
+                    Управление специалистами и их услугами.
+                </p>
+
+            </div>
+
+        </a>
+
+
+        <!-- УСЛУГИ -->
+
+        <a
+            href="{% url 'admin:services_service_changelist' %}"
+            class="dashboard-card"
+        >
+
+            <div class="dashboard-card-icon">
+                ✂️
+            </div>
+
+            <div>
+
+                <span class="dashboard-card-label">
+                    УСЛУГИ
+                </span>
+
+                <h2>
+                    Услуги
+                </h2>
+
+                <p>
+                    Добавление и редактирование услуг.
+                </p>
+
+            </div>
+
+        </a>
+
+
+        <!-- ПОРТФОЛИО -->
+
+        <a
+            href="{% url 'admin:services_portfolioimage_changelist' %}"
+            class="dashboard-card"
+        >
+
+            <div class="dashboard-card-icon">
+                🖼️
+            </div>
+
+            <div>
+
+                <span class="dashboard-card-label">
+                    ПОРТФОЛИО
+                </span>
+
+                <h2>
+                    Портфолио
+                </h2>
+
+                <p>
+                    Управление фотографиями работ мастеров.
+                </p>
+
+            </div>
+
+        </a>
+
+
+    </div>
+
+</div>
+
+{% endblock %}

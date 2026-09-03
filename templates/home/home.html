@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Booking System{% endblock %}
+
+{% block content %}
+
+<div class="home-page">
+
+    <div class="home-content">
+
+        <p class="home-label">
+            BOOKING SYSTEM
+        </p>
+
+        <h1>
+            Добро пожаловать<br>
+            в Booking System
+        </h1>
+
+        <p class="home-description">
+            Онлайн-запись к специалистам —
+            быстро, удобно и без лишних звонков.
+        </p>
+
+        <p class="home-by">
+            by <strong>Vlmslnk</strong>
+        </p>
+
+        <div class="home-actions">
+
+            <a href="{% url 'login' %}" class="home-button home-button-dark">
+                Войти
+            </a>
+
+            <a href="{% url 'register' %}" class="home-button home-button-light">
+                Регистрация
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

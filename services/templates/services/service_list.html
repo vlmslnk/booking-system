@@ -1,24 +1,25 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="{% static 'services/style.css' %}">
+{% extends "base.html" %}
 
-    <title>Наши услуги</title>
+{% block title %}Наши услуги{% endblock %}
 
-</head>
+{% block content %}
 
-<body>
+<div class="container">
 
-<header>
-    <h1>Система бронирования</h1>
-</header>
+    <div style="margin-bottom: 30px;">
+        <p class="profile-label">
+            BOOKING SYSTEM
+        </p>
 
-<main class="container">
+        <h1 style="margin: 0; font-size: 32px;">
+            Наши услуги
+        </h1>
 
-    <h2>Наши услуги</h2>
+        <p style="color: #888888; margin-top: 8px;">
+            Выберите услугу и удобное время для записи.
+        </p>
+    </div>
+
 
     <div class="services">
 
@@ -26,7 +27,9 @@
 
             <div class="service-card">
 
-                <h2>{{ service.name }}</h2>
+                <h2>
+                    {{ service.name }}
+                </h2>
 
                 <p class="description">
                     {{ service.description }}
@@ -41,23 +44,24 @@
                 </div>
 
                 <a
-href="{% url 'service_detail' service.id %}"
-    class="book-button"
->
-    Забронировать
-</a>
+                    href="{% url 'service_detail' service.id %}"
+                    class="book-button"
+                >
+                    Забронировать
+                </a>
 
             </div>
 
         {% empty %}
 
-            <p>Сейчас доступных услуг нет.</p>
+            <p>
+                Сейчас доступных услуг нет.
+            </p>
 
         {% endfor %}
 
     </div>
 
-</main>
+</div>
 
-</body>
-</html>
+{% endblock %}

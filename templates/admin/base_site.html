@@ -1,0 +1,56 @@
+{% extends "admin/base.html" %}
+
+{% load static %}
+
+{% block extrastyle %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'services/admin.css' %}"
+>
+
+{% endblock %}
+
+{% block title %}
+    Booking System — Админка
+{% endblock %}
+
+
+{% block branding %}
+
+<div class="booking-admin-brand">
+
+    <a href="{% url 'admin:index' %}">
+        <span class="booking-admin-logo">
+            B
+        </span>
+
+        <span class="booking-admin-name">
+            BOOKING
+        </span>
+    </a>
+
+</div>
+
+{% endblock %}
+
+
+{% block nav-global %}
+
+<div class="booking-admin-nav">
+
+    <a href="/">
+        На сайт
+    </a>
+
+    <span class="booking-admin-divider">
+        /
+    </span>
+
+    <span>
+        Панель управления
+    </span>
+
+</div>
+
+{% endblock %}

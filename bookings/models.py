@@ -43,6 +43,10 @@ class WorkingHour(models.Model):
         verbose_name="Активно",
     )
 
+    class Meta:
+        verbose_name = "Рабочее время"
+        verbose_name_plural = "Рабочее время"
+
     def __str__(self):
         return (
             f"{self.specialist.name} — "
@@ -108,7 +112,8 @@ class Booking(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["specialist", "date", "time"],
-                name="unique_specialist_booking",
+                condition=models.Q(status="scheduled"),
+                name="unique_scheduled_specialist_booking",
             ),
         ]
 

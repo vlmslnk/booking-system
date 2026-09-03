@@ -1,14 +1,19 @@
 from django.shortcuts import get_object_or_404, render
-from .models import Service
+
+from .models import Service, Specialist
 
 
 def service_list(request):
-    services = Service.objects.filter(is_active=True)
+    services = Service.objects.filter(
+        is_active=True
+    )
 
     return render(
         request,
         "services/service_list.html",
-        {"services": services}
+        {
+            "services": services,
+        },
     )
 
 
@@ -29,5 +34,43 @@ def service_detail(request, service_id):
         {
             "service": service,
             "specialists": specialists,
-        }
+        },
     )
+
+
+def specialist_list(request):
+    specialists = Specialist.objects.filter(
+        is_active=True
+    ).prefetch_related("services")
+
+    return render(
+        request,
+        "services/specialist_list.html",
+        {
+            "specialists": specialists,
+        },
+    )
+
+
+def specialist_detail(request, specialist_id):
+    specialist = get_object_or_404(
+        Specialist,
+        id=specialist_id,
+        is_active=True
+    )
+
+    services = specialist.services.filter(
+        is_active=True
+    )
+
+    return render(
+        request,
+        "services/specialist_detail.html",
+        {
+            "specialist": specialist,
+            "services": services,
+        },
+    )
+
+def home(request):
+    return render(request, "home/home.html")
