@@ -107,6 +107,8 @@ class Booking(models.Model):
     )
 
     class Meta:
+        verbose_name = "Запись клиента"
+        verbose_name_plural = "Записи клиентов"
         ordering = ["-date", "-time"]
 
         constraints = [
