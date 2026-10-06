@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from services.models import Service, Specialist
@@ -118,6 +121,72 @@ class Booking(models.Model):
                 name="unique_scheduled_specialist_booking",
             ),
         ]
+
+    def clean(self):
+        super().clean()
+
+        # Если необходимых данных нет,
+        # проверять пересечение невозможно.
+        if (
+            not self.specialist_id
+            or not self.service_id
+            or not self.date
+            or not self.time
+        ):
+            return
+
+        # Отменённая запись не блокирует время.
+        if self.status != "scheduled":
+            return
+
+        # Начало и конец новой записи.
+        booking_start = datetime.combine(
+            self.date,
+            self.time,
+        )
+
+        booking_end = booking_start + timedelta(
+            minutes=self.service.duration
+        )
+
+        # Все активные записи этого специалиста
+        # на эту же дату.
+        existing_bookings = Booking.objects.filter(
+            specialist=self.specialist,
+            date=self.date,
+            status="scheduled",
+        ).exclude(
+            pk=self.pk,
+        ).select_related("service")
+
+        for booking in existing_bookings:
+
+            existing_start = datetime.combine(
+                booking.date,
+                booking.time,
+            )
+
+            existing_end = existing_start + timedelta(
+                minutes=booking.service.duration
+            )
+
+            # Проверяем пересечение интервалов.
+            if (
+                booking_start < existing_end
+                and booking_end > existing_start
+            ):
+                raise ValidationError(
+                    {
+                        "time": (
+                            "Выбранное время пересекается "
+                            "с другой записью этого специалиста."
+                        )
+                    }
+                )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return (

@@ -1,6 +1,7 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -41,8 +42,7 @@ def get_available_slots(service, specialist, selected_date):
         minutes=service.duration
     )
 
-    # Учитываем только активные записи.
-    # Отменённые записи больше не блокируют время.
+    # Отменённые записи не блокируют время.
     bookings = Booking.objects.filter(
         specialist=specialist,
         date=selected_date,
@@ -51,7 +51,7 @@ def get_available_slots(service, specialist, selected_date):
 
     available_slots = []
 
-    # Текущее время для сегодняшнего дня
+    # Текущее время для сегодняшнего дня.
     current_datetime = timezone.localtime()
 
     while current_time + duration <= working_end:
@@ -59,7 +59,7 @@ def get_available_slots(service, specialist, selected_date):
         slot_start = current_time
         slot_end = current_time + duration
 
-        # Не показываем уже прошедшее время сегодня
+        # Не показываем уже прошедшее время сегодня.
         if selected_date == current_datetime.date():
             if slot_start.time() <= current_datetime.time():
                 current_time += timedelta(minutes=30)
@@ -78,7 +78,7 @@ def get_available_slots(service, specialist, selected_date):
                 minutes=booking.service.duration
             )
 
-            # Проверяем пересечение времени
+            # Проверяем пересечение интервалов.
             if (
                 slot_start < booking_end
                 and slot_end > booking_start
@@ -111,7 +111,7 @@ def create_booking(request, service_id, specialist_id):
         is_active=True,
     )
 
-    # Проверяем, оказывает ли специалист эту услугу
+    # Проверяем, оказывает ли специалист эту услугу.
     if not specialist.services.filter(
         id=service.id
     ).exists():
@@ -123,7 +123,7 @@ def create_booking(request, service_id, specialist_id):
 
     available_slots = []
 
-    # Если дата выбрана через GET
+    # Если дата выбрана через GET.
     if selected_date:
 
         try:
@@ -144,7 +144,7 @@ def create_booking(request, service_id, specialist_id):
         except ValueError:
             selected_date = None
 
-    # Обработка бронирования
+    # Обработка бронирования.
     if request.method == "POST":
 
         form = BookingForm(request.POST)
@@ -159,13 +159,16 @@ def create_booking(request, service_id, specialist_id):
                     "%Y-%m-%d",
                 ).date()
 
-                # Не позволяем отправить прошедшую дату
+                # Не позволяем отправить прошедшую дату.
                 if form_date < today:
+
                     form.add_error(
                         "date",
                         "Нельзя выбрать прошедшую дату.",
                     )
+
                 else:
+
                     available_slots = get_available_slots(
                         service,
                         specialist,
@@ -188,7 +191,7 @@ def create_booking(request, service_id, specialist_id):
             booking.service = service
             booking.specialist = specialist
 
-            # Повторно проверяем доступность времени
+            # Повторно проверяем доступность времени.
             selected_slots = get_available_slots(
                 service,
                 specialist,
@@ -208,12 +211,23 @@ def create_booking(request, service_id, specialist_id):
 
             else:
 
-                booking.save()
+                try:
+                    booking.save()
 
-                return redirect(
-                    "booking_success",
-                    booking_id=booking.id,
-                )
+                except ValidationError as error:
+
+                    for message in error.messages:
+                        form.add_error(
+                            "time",
+                            message,
+                        )
+
+                else:
+
+                    return redirect(
+                        "booking_success",
+                        booking_id=booking.id,
+                    )
 
     else:
 
