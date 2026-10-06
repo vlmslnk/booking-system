@@ -125,6 +125,23 @@ class Booking(models.Model):
     def clean(self):
         super().clean()
 
+        if self.pk:
+            old_booking = Booking.objects.filter(
+                pk=self.pk
+            ).first()
+
+        if (
+                old_booking
+                and old_booking.status == "completed"
+                and self.status == "cancelled"
+            ):
+            raise ValidationError(
+                    {
+                        "status": (
+                            "Завершённую запись нельзя отменить."
+                        )
+                    }
+                )
         # Если необходимых данных нет,
         # проверять пересечение невозможно.
         if (
