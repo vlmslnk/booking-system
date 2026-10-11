@@ -1,3 +1,4 @@
+
 from datetime import datetime, timedelta
 
 from django.contrib.auth.decorators import login_required
@@ -12,292 +13,233 @@ from .models import Booking
 
 
 def get_available_slots(service, specialist, selected_date):
-    """
-    Возвращает список свободных временных слотов
-    для выбранной услуги, специалиста и даты.
-    """
+    """Возвращает доступные слоты с учётом расписания и исключений."""
+    exception = specialist.schedule_exceptions.filter(
+        date=selected_date,
+    ).prefetch_related("intervals").first()
 
-    weekday = selected_date.weekday()
+    if exception:
+        if exception.is_day_off:
+            return []
 
-    working_hour = specialist.working_hours.filter(
-        start_weekday__lte=weekday,
-        end_weekday__gte=weekday,
-        is_active=True,
-    ).first()
+        working_intervals = [
+            (interval.start_time, interval.end_time)
+            for interval in exception.intervals.all()
+        ]
+    else:
+        weekday = selected_date.weekday()
+        working_intervals = list(
+            specialist.working_hours.filter(
+                start_weekday__lte=weekday,
+                end_weekday__gte=weekday,
+                is_active=True,
+            ).order_by("start_time").values_list(
+                "start_time", "end_time"
+            )
+        )
 
-    if not working_hour:
+    if not working_intervals:
         return []
 
-    current_time = datetime.combine(
-        selected_date,
-        working_hour.start_time,
+    duration = timedelta(minutes=service.duration)
+    bookings = list(
+        Booking.objects.filter(
+            specialist=specialist,
+            date=selected_date,
+            status="scheduled",
+        ).select_related("service")
     )
 
-    working_end = datetime.combine(
-        selected_date,
-        working_hour.end_time,
-    )
-
-    duration = timedelta(
-        minutes=service.duration
-    )
-
-    # Отменённые записи не блокируют время.
-    bookings = Booking.objects.filter(
-        specialist=specialist,
-        date=selected_date,
-        status="scheduled",
-    ).select_related("service")
-
-    available_slots = []
-
-    # Текущее время для сегодняшнего дня.
     current_datetime = timezone.localtime()
+    available_slots = set()
 
-    while current_time + duration <= working_end:
+    for start_time, end_time in working_intervals:
+        current_time = datetime.combine(selected_date, start_time)
+        working_end = datetime.combine(selected_date, end_time)
 
-        slot_start = current_time
-        slot_end = current_time + duration
+        while current_time + duration <= working_end:
+            slot_start = current_time
+            slot_end = slot_start + duration
 
-        # Не показываем уже прошедшее время сегодня.
-        if selected_date == current_datetime.date():
-            if slot_start.time() <= current_datetime.time():
+            if (
+                selected_date == current_datetime.date()
+                and slot_start.time() <= current_datetime.time()
+            ):
                 current_time += timedelta(minutes=30)
                 continue
 
-        is_available = True
+            is_available = True
 
-        for booking in bookings:
+            for booking in bookings:
+                booking_start = datetime.combine(
+                    booking.date, booking.time
+                )
+                booking_end = booking_start + timedelta(
+                    minutes=(booking.service_duration if booking.service_duration is not None else booking.service.duration)
+                )
 
-            booking_start = datetime.combine(
-                selected_date,
-                booking.time,
-            )
+                if slot_start < booking_end and slot_end > booking_start:
+                    is_available = False
+                    break
 
-            booking_end = booking_start + timedelta(
-                minutes=booking.service.duration
-            )
+            if is_available:
+                available_slots.add(current_time.strftime("%H:%M"))
 
-            # Проверяем пересечение интервалов.
-            if (
-                slot_start < booking_end
-                and slot_end > booking_start
-            ):
-                is_available = False
-                break
+            current_time += timedelta(minutes=30)
 
-        if is_available:
-            available_slots.append(
-                current_time.strftime("%H:%M")
-            )
-
-        current_time += timedelta(minutes=30)
-
-    return available_slots
+    return sorted(available_slots)
 
 
 @login_required
 def create_booking(request, service_id, specialist_id):
-
     service = get_object_or_404(
         Service,
-        id=service_id,
+        pk=service_id,
         is_active=True,
     )
 
     specialist = get_object_or_404(
         Specialist,
-        id=specialist_id,
+        pk=specialist_id,
         is_active=True,
     )
 
-    # Проверяем, оказывает ли специалист эту услугу.
-    if not specialist.services.filter(
-        id=service.id
-    ).exists():
-        return redirect("service_list")
+    # Проверяем, оказывает ли специалист выбранную услугу.
+    if not specialist.services.filter(pk=service.pk).exists():
+        return redirect("services:service_list")
 
-    today = timezone.localdate()
-
-    selected_date = request.GET.get("date")
-
+    selected_date = None
     available_slots = []
 
-    # Если дата выбрана через GET.
-    if selected_date:
-
-        try:
-            selected_date = datetime.strptime(
-                selected_date,
-                "%Y-%m-%d",
-            ).date()
-
-            if selected_date < today:
-                selected_date = None
-            else:
-                available_slots = get_available_slots(
-                    service,
-                    specialist,
-                    selected_date,
-                )
-
-        except ValueError:
-            selected_date = None
-
-    # Обработка бронирования.
     if request.method == "POST":
-
         form = BookingForm(request.POST)
 
-        date_value = request.POST.get("date")
+        if form.is_valid():
+            selected_date = form.cleaned_data["date"]
 
-        if date_value:
+            available_slots = get_available_slots(
+                service,
+                specialist,
+                selected_date,
+            )
 
-            try:
-                form_date = datetime.strptime(
-                    date_value,
-                    "%Y-%m-%d",
-                ).date()
+            selected_time = form.cleaned_data["time"]
 
-                # Не позволяем отправить прошедшую дату.
-                if form_date < today:
+            if selected_time.strftime("%H:%M") not in available_slots:
+                form.add_error(
+                    "time",
+                    "Это время уже недоступно. Выберите другое.",
+                )
+            else:
+                booking = form.save(commit=False)
+                booking.user = request.user
+                booking.service = service
+                booking.specialist = specialist
 
-                    form.add_error(
-                        "date",
-                        "Нельзя выбрать прошедшую дату.",
-                    )
-
-                else:
+                try:
+                    booking.save()
+                except ValidationError as error:
+                    for field, errors in error.message_dict.items():
+                        for message in errors:
+                            form.add_error(field, message)
 
                     available_slots = get_available_slots(
                         service,
                         specialist,
-                        form_date,
+                        selected_date,
                     )
-
-                    form.fields["time"].choices = [
-                        (slot, slot)
-                        for slot in available_slots
-                    ]
-
-            except ValueError:
-                pass
-
-        if form.is_valid():
-
-            booking = form.save(commit=False)
-
-            booking.user = request.user
-            booking.service = service
-            booking.specialist = specialist
-
-            # Повторно проверяем доступность времени.
-            selected_slots = get_available_slots(
-                service,
-                specialist,
-                booking.date,
-            )
-
-            selected_time = booking.time.strftime(
-                "%H:%M"
-            )
-
-            if selected_time not in selected_slots:
-
-                form.add_error(
-                    "time",
-                    "Это время уже занято или недоступно.",
-                )
-
-            else:
-
-                try:
-                    booking.save()
-
-                except ValidationError as error:
-
-                    for message in error.messages:
-                        form.add_error(
-                            "time",
-                            message,
-                        )
-
                 else:
-
                     return redirect(
-                        "booking_success",
-                        booking_id=booking.id,
+                        "bookings:booking_success",
+                        booking_id=booking.pk,
                     )
-
     else:
-
         form = BookingForm()
 
-        if available_slots:
+        date_value = request.GET.get("date")
 
-            form.fields["time"].choices = [
-                (slot, slot)
-                for slot in available_slots
-            ]
+        if date_value:
+            try:
+                selected_date = datetime.strptime(
+                    date_value,
+                    "%Y-%m-%d",
+                ).date()
+            except ValueError:
+                selected_date = None
 
-        else:
+        if selected_date:
+            available_slots = get_available_slots(
+                service,
+                specialist,
+                selected_date,
+            )
 
-            form.fields["time"].choices = [
-                ("", "Сначала выберите дату")
-            ]
-
-        selected_time = request.GET.get("time")
-
-        if selected_time:
-            form.fields["time"].initial = selected_time
+    context = {
+        "form": form,
+        "service": service,
+        "specialist": specialist,
+        "selected_date": selected_date,
+        "available_slots": available_slots,
+    }
 
     return render(
         request,
         "bookings/create_booking.html",
-        {
-            "form": form,
-            "service": service,
-            "specialist": specialist,
-            "available_slots": available_slots,
-            "selected_date": selected_date,
-            "today": today,
-        },
+        context,
     )
 
 
+@login_required
 def booking_success(request, booking_id):
-
     booking = get_object_or_404(
-        Booking,
-        id=booking_id,
+        Booking.objects.select_related(
+            "service",
+            "specialist",
+        ),
+        pk=booking_id,
+        user=request.user,
     )
 
     return render(
         request,
         "bookings/booking_success.html",
-        {
-            "booking": booking,
-        },
+        {"booking": booking},
     )
 
 
 @login_required
 def cancel_booking(request, booking_id):
-
     booking = get_object_or_404(
         Booking,
-        id=booking_id,
+        pk=booking_id,
         user=request.user,
     )
 
     if request.method == "POST":
+        if booking.status == "scheduled":
+            booking.status = "cancelled"
+            booking.save()
 
-        booking.status = "cancelled"
+        return redirect("bookings:my_bookings")
 
-        booking.save(
-            update_fields=["status"]
-        )
+    return render(
+        request,
+        "bookings/cancel_booking.html",
+        {"booking": booking},
+    )
 
-        return redirect("profile")
 
-    return redirect("profile")
+@login_required
+def my_bookings(request):
+    bookings = Booking.objects.filter(
+        user=request.user,
+    ).select_related(
+        "service",
+        "specialist",
+    )
+
+    return render(
+        request,
+        "bookings/my_bookings.html",
+        {"bookings": bookings},
+    )

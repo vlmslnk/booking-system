@@ -50,6 +50,30 @@ class WorkingHour(models.Model):
         verbose_name = "Рабочее время"
         verbose_name_plural = "Рабочее время"
 
+    def clean(self):
+        super().clean()
+
+        if self.start_time and self.end_time:
+            if self.start_time >= self.end_time:
+                raise ValidationError({
+                    "end_time": (
+                        "Время окончания должно быть позже "
+                        "времени начала."
+                    )
+                })
+
+        if (
+            self.start_weekday is not None
+            and self.end_weekday is not None
+            and self.start_weekday > self.end_weekday
+        ):
+            raise ValidationError({
+                "end_weekday": (
+                    "Последний день не может быть раньше "
+                    "первого дня."
+                )
+            })
+
     def __str__(self):
         return (
             f"{self.specialist.name} — "
@@ -61,6 +85,11 @@ class WorkingHour(models.Model):
 
 
 class Booking(models.Model):
+    STATUS_CHOICES = [
+        ("scheduled", "Запланировано"),
+        ("completed", "Завершено"),
+        ("cancelled", "Отменено"),
+    ]
 
     user = models.ForeignKey(
         "auth.User",
@@ -92,15 +121,23 @@ class Booking(models.Model):
 
     time = models.TimeField()
 
+    service_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Цена на момент записи",
+    )
+
+    service_duration = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Длительность на момент записи",
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True,
     )
-
-    STATUS_CHOICES = [
-        ("scheduled", "Запланировано"),
-        ("completed", "Завершено"),
-        ("cancelled", "Отменено"),
-    ]
 
     status = models.CharField(
         max_length=20,
@@ -125,25 +162,22 @@ class Booking(models.Model):
     def clean(self):
         super().clean()
 
+        old_booking = None
+
         if self.pk:
             old_booking = Booking.objects.filter(
                 pk=self.pk
             ).first()
 
         if (
-                old_booking
-                and old_booking.status == "completed"
-                and self.status == "cancelled"
-            ):
-            raise ValidationError(
-                    {
-                        "status": (
-                            "Завершённую запись нельзя отменить."
-                        )
-                    }
-                )
-        # Если необходимых данных нет,
-        # проверять пересечение невозможно.
+            old_booking
+            and old_booking.status == "completed"
+            and self.status == "cancelled"
+        ):
+            raise ValidationError({
+                "status": "Завершённую запись нельзя отменить."
+            })
+
         if (
             not self.specialist_id
             or not self.service_id
@@ -152,11 +186,9 @@ class Booking(models.Model):
         ):
             return
 
-        # Отменённая запись не блокирует время.
         if self.status != "scheduled":
             return
 
-        # Начало и конец новой записи.
         booking_start = datetime.combine(
             self.date,
             self.time,
@@ -166,8 +198,6 @@ class Booking(models.Model):
             minutes=self.service.duration
         )
 
-        # Все активные записи этого специалиста
-        # на эту же дату.
         existing_bookings = Booking.objects.filter(
             specialist=self.specialist,
             date=self.date,
@@ -177,7 +207,6 @@ class Booking(models.Model):
         ).select_related("service")
 
         for booking in existing_bookings:
-
             existing_start = datetime.combine(
                 booking.date,
                 booking.time,
@@ -187,21 +216,24 @@ class Booking(models.Model):
                 minutes=booking.service.duration
             )
 
-            # Проверяем пересечение интервалов.
             if (
                 booking_start < existing_end
                 and booking_end > existing_start
             ):
-                raise ValidationError(
-                    {
-                        "time": (
-                            "Выбранное время пересекается "
-                            "с другой записью этого специалиста."
-                        )
-                    }
-                )
+                raise ValidationError({
+                    "time": (
+                        "Выбранное время пересекается "
+                        "с другой записью этого специалиста."
+                    )
+                })
 
     def save(self, *args, **kwargs):
+        if self.service_price is None:
+            self.service_price = self.service.price
+
+        if self.service_duration is None:
+            self.service_duration = self.service.duration
+
         self.full_clean()
         super().save(*args, **kwargs)
 
@@ -209,4 +241,70 @@ class Booking(models.Model):
         return (
             f"{self.customer_name} — {self.service.name} — "
             f"{self.date} {self.time}"
+        )
+
+
+class ScheduleException(models.Model):
+    specialist = models.ForeignKey(
+        Specialist,
+        on_delete=models.CASCADE,
+        related_name="schedule_exceptions",
+        verbose_name="Специалист",
+    )
+    date = models.DateField(verbose_name="Дата")
+    is_day_off = models.BooleanField(
+        default=False,
+        verbose_name="Выходной",
+    )
+    note = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name="Комментарий",
+    )
+
+    class Meta:
+        verbose_name = "Исключение расписания"
+        verbose_name_plural = "Исключения расписания"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["specialist", "date"],
+                name="unique_specialist_schedule_exception",
+            ),
+        ]
+        ordering = ["date", "specialist"]
+
+    def __str__(self):
+        return f"{self.specialist.name} — {self.date}"
+
+
+class ScheduleExceptionInterval(models.Model):
+    exception = models.ForeignKey(
+        ScheduleException,
+        on_delete=models.CASCADE,
+        related_name="intervals",
+        verbose_name="Исключение",
+    )
+    start_time = models.TimeField(verbose_name="Начало работы")
+    end_time = models.TimeField(verbose_name="Конец работы")
+
+    class Meta:
+        verbose_name = "Специальный рабочий интервал"
+        verbose_name_plural = "Специальные рабочие интервалы"
+        ordering = ["start_time"]
+
+    def clean(self):
+        super().clean()
+        if (
+            self.start_time
+            and self.end_time
+            and self.start_time >= self.end_time
+        ):
+            raise ValidationError({
+                "end_time": "Время окончания должно быть позже начала."
+            })
+
+    def __str__(self):
+        return (
+            f"{self.exception} — "
+            f"{self.start_time:%H:%M}–{self.end_time:%H:%M}"
         )
