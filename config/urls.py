@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from services.views import home
-
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path("", home, name="home"),
@@ -28,6 +28,9 @@ urlpatterns = [
     path("bookings/", include("bookings.urls")),
     path("accounts/", include("accounts.urls")),
     path("api/", include("services.api_urls")),
+    path("api/auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/", include("bookings.api_urls")),
 ]
 
 if settings.DEBUG:
