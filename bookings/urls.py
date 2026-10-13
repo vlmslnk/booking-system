@@ -21,4 +21,9 @@ urlpatterns = [
         views.cancel_booking,
         name="cancel_booking",
     ),
+    path(
+        "my/",
+        views.my_bookings,
+        name="my_bookings",
+    ),
 ]

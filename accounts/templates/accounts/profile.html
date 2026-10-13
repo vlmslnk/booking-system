@@ -215,11 +215,11 @@
                             <div>
 
                                 <span>
-                                    {{ booking.service.duration }} минут
+                                    {{ booking.service_duration|default:booking.service.duration }} минут
                                 </span>
 
                                 <strong>
-                                    {{ booking.service.price }} €
+                                    {{ booking.service_price|default:booking.service.price }} €
                                 </strong>
 
                             </div>
@@ -396,11 +396,11 @@
                             <div>
 
                                 <span>
-                                    {{ booking.service.duration }} минут
+                                    {{ booking.service_duration|default:booking.service.duration }} минут
                                 </span>
 
                                 <strong>
-                                    {{ booking.service.price }} €
+                                    {{ booking.service_price|default:booking.service.price }} €
                                 </strong>
 
                             </div>
@@ -557,11 +557,11 @@
                             <div>
 
                                 <span>
-                                    {{ booking.service.duration }} минут
+                                    {{ booking.service_duration|default:booking.service.duration }} минут
                                 </span>
 
                                 <strong>
-                                    {{ booking.service.price }} €
+                                    {{ booking.service_price|default:booking.service.price }} €
                                 </strong>
 
                             </div>

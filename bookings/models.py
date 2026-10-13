@@ -99,13 +99,13 @@ class Booking(models.Model):
 
     service = models.ForeignKey(
         Service,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="bookings",
     )
 
     specialist = models.ForeignKey(
         Specialist,
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
         related_name="bookings",
     )
 
@@ -194,8 +194,14 @@ class Booking(models.Model):
             self.time,
         )
 
+        current_duration = (
+            self.service_duration
+            if self.service_duration is not None
+            else self.service.duration
+        )
+
         booking_end = booking_start + timedelta(
-            minutes=self.service.duration
+            minutes=current_duration
         )
 
         existing_bookings = Booking.objects.filter(
@@ -212,8 +218,14 @@ class Booking(models.Model):
                 booking.time,
             )
 
+            existing_duration = (
+                booking.service_duration
+                if booking.service_duration is not None
+                else booking.service.duration
+            )
+
             existing_end = existing_start + timedelta(
-                minutes=booking.service.duration
+                minutes=existing_duration
             )
 
             if (
