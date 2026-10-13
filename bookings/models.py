@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 
 from services.models import Service, Specialist
 
@@ -150,7 +151,6 @@ class Booking(models.Model):
         verbose_name = "Запись клиента"
         verbose_name_plural = "Записи клиентов"
         ordering = ["-date", "-time"]
-
         constraints = [
             models.UniqueConstraint(
                 fields=["specialist", "date", "time"],
@@ -163,11 +163,8 @@ class Booking(models.Model):
         super().clean()
 
         old_booking = None
-
         if self.pk:
-            old_booking = Booking.objects.filter(
-                pk=self.pk
-            ).first()
+            old_booking = Booking.objects.filter(pk=self.pk).first()
 
         if (
             old_booking
@@ -189,49 +186,91 @@ class Booking(models.Model):
         if self.status != "scheduled":
             return
 
-        booking_start = datetime.combine(
-            self.date,
-            self.time,
-        )
+        if not self.specialist.services.filter(pk=self.service_id).exists():
+            raise ValidationError({
+                "service": "Этот специалист не оказывает выбранную услугу."
+            })
 
+        today = timezone.localdate()
+        current_time = timezone.localtime().replace(tzinfo=None).time()
+
+        if self.date < today:
+            raise ValidationError({
+                "date": "Нельзя создать запись на прошедшую дату."
+            })
+
+        if self.date == today and self.time <= current_time:
+            raise ValidationError({
+                "time": "Нельзя создать запись на прошедшее время."
+            })
+
+        booking_start = datetime.combine(self.date, self.time)
         current_duration = (
             self.service_duration
             if self.service_duration is not None
             else self.service.duration
         )
+        booking_end = booking_start + timedelta(minutes=current_duration)
 
-        booking_end = booking_start + timedelta(
-            minutes=current_duration
+        schedule_exception = ScheduleException.objects.filter(
+            specialist=self.specialist,
+            date=self.date,
+        ).first()
+
+        if schedule_exception and schedule_exception.is_day_off:
+            raise ValidationError({
+                "date": "В этот день специалист не работает."
+            })
+
+        if schedule_exception:
+            intervals = list(
+                schedule_exception.intervals.values_list(
+                    "start_time", "end_time"
+                )
+            )
+        else:
+            weekday = self.date.weekday()
+            intervals = list(
+                WorkingHour.objects.filter(
+                    specialist=self.specialist,
+                    is_active=True,
+                    start_weekday__lte=weekday,
+                    end_weekday__gte=weekday,
+                ).values_list("start_time", "end_time")
+            )
+
+        fits_schedule = any(
+            booking_start >= datetime.combine(self.date, start_time)
+            and booking_end <= datetime.combine(self.date, end_time)
+            for start_time, end_time in intervals
         )
+
+        if not fits_schedule:
+            raise ValidationError({
+                "time": (
+                    "Запись должна полностью помещаться "
+                    "в рабочее время специалиста."
+                )
+            })
 
         existing_bookings = Booking.objects.filter(
             specialist=self.specialist,
             date=self.date,
             status="scheduled",
-        ).exclude(
-            pk=self.pk,
-        ).select_related("service")
+        ).exclude(pk=self.pk).select_related("service")
 
         for booking in existing_bookings:
-            existing_start = datetime.combine(
-                booking.date,
-                booking.time,
-            )
-
+            existing_start = datetime.combine(booking.date, booking.time)
             existing_duration = (
                 booking.service_duration
                 if booking.service_duration is not None
                 else booking.service.duration
             )
-
             existing_end = existing_start + timedelta(
                 minutes=existing_duration
             )
 
-            if (
-                booking_start < existing_end
-                and booking_end > existing_start
-            ):
+            if booking_start < existing_end and booking_end > existing_start:
                 raise ValidationError({
                     "time": (
                         "Выбранное время пересекается "

@@ -155,6 +155,64 @@ class BookingScheduleTests(TestCase):
         self.assertNotIn("09:00", slots)
         self.assertNotIn("16:30", slots)
 
+    def test_booking_in_the_past_is_rejected(self):
+        booking = Booking(
+            user=self.user,
+            service=self.service,
+            specialist=self.specialist,
+            customer_name="Клиент",
+            customer_phone="123456789",
+            date=date.today() - timedelta(days=1),
+            time=time(9, 0),
+        )
+        with self.assertRaises(ValidationError):
+            booking.save()
+
+    def test_booking_outside_working_hours_is_rejected(self):
+        booking = Booking(
+            user=self.user,
+            service=self.service,
+            specialist=self.specialist,
+            customer_name="Клиент",
+            customer_phone="123456789",
+            date=self.selected_date,
+            time=time(12, 0),
+        )
+        with self.assertRaises(ValidationError):
+            booking.save()
+
+    def test_booking_ending_after_working_hours_is_rejected(self):
+        booking = Booking(
+            user=self.user,
+            service=self.service,
+            specialist=self.specialist,
+            customer_name="Клиент",
+            customer_phone="123456789",
+            date=self.selected_date,
+            time=time(11, 30),
+        )
+        with self.assertRaises(ValidationError):
+            booking.save()
+
+    def test_service_not_provided_by_specialist_is_rejected(self):
+        other_service = Service.objects.create(
+            name="Другая услуга",
+            description="Тестовая услуга",
+            price=Decimal("30.00"),
+            duration=30,
+        )
+        booking = Booking(
+            user=self.user,
+            service=other_service,
+            specialist=self.specialist,
+            customer_name="Клиент",
+            customer_phone="123456789",
+            date=self.selected_date,
+            time=time(9, 0),
+        )
+        with self.assertRaises(ValidationError):
+            booking.save()
+
     def test_booking_keeps_original_service_price_and_duration(self):
         booking = Booking.objects.create(
             user=self.user,

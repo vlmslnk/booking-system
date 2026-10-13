@@ -1,58 +1,44 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 
 class RegistrationForm(forms.ModelForm):
     password = forms.CharField(
         label="Пароль",
         widget=forms.PasswordInput(
-            attrs={
-                "placeholder": "Введите пароль",
-            }
+            attrs={"placeholder": "Введите пароль"}
         ),
     )
 
     password_confirm = forms.CharField(
         label="Повторите пароль",
         widget=forms.PasswordInput(
-            attrs={
-                "placeholder": "Повторите пароль",
-            }
+            attrs={"placeholder": "Повторите пароль"}
         ),
     )
 
     class Meta:
         model = User
-
-        fields = [
-            "username",
-            "email",
-        ]
-
+        fields = ["username", "email"]
         labels = {
             "username": "Имя пользователя",
             "email": "Email",
         }
-
         widgets = {
             "username": forms.TextInput(
-                attrs={
-                    "placeholder": "Введите имя пользователя",
-                }
+                attrs={"placeholder": "Введите имя пользователя"}
             ),
             "email": forms.EmailInput(
-                attrs={
-                    "placeholder": "Введите email",
-                }
+                attrs={"placeholder": "Введите email"}
             ),
         }
 
     def clean_username(self):
         username = self.cleaned_data["username"]
 
-        if User.objects.filter(
-            username=username
-        ).exists():
+        if User.objects.filter(username=username).exists():
             raise forms.ValidationError(
                 "Пользователь с таким именем уже существует."
             )
@@ -61,15 +47,24 @@ class RegistrationForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-
         password = cleaned_data.get("password")
         password_confirm = cleaned_data.get("password_confirm")
 
-        if password and password_confirm:
-            if password != password_confirm:
-                self.add_error(
-                    "password_confirm",
-                    "Пароли не совпадают.",
-                )
+        if password and password_confirm and password != password_confirm:
+            self.add_error(
+                "password_confirm",
+                "Пароли не совпадают.",
+            )
+
+        if password:
+            user = User(
+                username=cleaned_data.get("username", ""),
+                email=cleaned_data.get("email", ""),
+            )
+
+            try:
+                validate_password(password, user=user)
+            except ValidationError as error:
+                self.add_error("password", error)
 
         return cleaned_data

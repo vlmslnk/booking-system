@@ -4,3 +4,5 @@ djangorestframework
 djangorestframework-simplejwt
 pillow==12.3.0
 sqlparse==0.6.0
+
+psycopg[binary]
